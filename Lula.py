@@ -17,10 +17,7 @@ class LulaCryptoScanner:
             
             'Crypto DeFi': ['UNI-USD', 'AAVE-USD', 'MKR-USD', 'CRV-USD', 'SNX-USD', 'SUSHI-USD'],
             
-            'BTC Pairs': ['BTC-USD', 'BTC-EUR', 'BTC-GBP', 'ETH-BTC', 'ADA-BTC', 'ATOM-BTC', 'AVAX-BTC', 
-                         'BAT-BTC', 'BCH-BTC', 'COMP-BTC', 'CRV-BTC', 'DASH-BTC', 'DOGE-BTC', 'DOT-BTC',
-                         'FIL-BTC', 'GRT-BTC', 'LINK-BTC', 'LRC-BTC', 'MATIC-BTC', 'MKR-BTC',
-                         'SNX-BTC', 'SOL-BTC', 'UNI-BTC', 'XLM-BTC', 'XTZ-BTC', 'YFI-BTC'],
+            'BTC Pairs': ['BTC-USD'],
             
             'ETH Pairs': ['ETH-USD', 'ETH-EUR', 'ETH-GBP', 'ETH-BTC', 'AAVE-ETH', 'ADA-ETH', 'ALGO-ETH',
                          'ATOM-ETH', 'BCH-ETH', 'DOT-ETH', 'ETC-ETH', 'FIL-ETH', 'LTC-ETH', 'SOL-ETH',
@@ -753,8 +750,8 @@ if __name__ == "__main__":
     scanner = LulaCryptoScanner()
     
     # OPTIONAL: Set up notifications
-    scanner.push_config['pushover_token'] = 'afh8vfyctjm48ta44od7a2w19e52t6'
-    scanner.push_config['pushover_user'] = 'u9uzeesuxqax45yhjrzyfvv6opbm6y'
+    # scanner.push_config['pushover_token'] = 'your_actual_token'
+    # scanner.push_config['pushover_user'] = 'your_actual_user_key'
     
     # scanner.push_config['telegram_token'] = 'your_bot_token'
     # scanner.push_config['telegram_chat_id'] = 'your_chat_id'
