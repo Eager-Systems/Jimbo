@@ -1,4 +1,37 @@
-import yfinance as yf
+for sector, symbols in self.sectors.items():
+            print(f"Scanning {sector} sector...")
+            sector_results = {'A+': 0, 'A': 0, 'total': 0, 'upgrades': 0, 'skipped': 0, 'bull_flags': 0}
+            
+            for symbol in symbols:
+                try:
+                    analysis = self.analyze_crypto(symbol, sector)
+                    if analysis:
+                        results['total_scanned'] += 1
+                        sector_results['total'] += 1
+                        
+                        # Count bull flags
+                        if analysis['bull_flag']['is_bull_flag']:
+                            sector_results['bull_flags'] += 1
+                        
+                        if analysis['setup_grade'] == 'A+':
+                            results['A+'].append(analysis)
+                            sector_results['A+'] += 1
+                            if analysis['upgrade_applied']:
+                                results['total_upgraded_positions'] += 1
+                                sector_results['upgrades'] += 1
+                            else:
+                                results['total_base_positions'] += 1
+                        elif analysis['setup_grade'] == 'A':
+                            results['A'].append(analysis)
+                            sector_results['A'] += 1
+                            results['total_base_positions'] += 1
+                    else:
+                        # Count skipped symbols (no data available)
+                        sector_results['skipped'] += 1
+                
+                except Exception as e:
+                    print(f"Error analyzing {symbol}: {e}")
+                    sector_results['skipped'] +=import yfinance as yf
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
@@ -19,7 +52,7 @@ class LulaCryptoScanner:
             
             'BTC Pairs': ['BTC-USD'],
             
-            'ETH Pairs': ['ETH-USD', 'ETH-EUR', 'ETH-GBP', 'ETH-BTC', 'AAVE-ETH', 'ADA-ETH', 'ALGO-ETH',
+            'ETH Pairs': ['ETH-USD', 'ETH-BTC', 'AAVE-ETH', 'ADA-ETH', 'ALGO-ETH',
                          'ATOM-ETH', 'BCH-ETH', 'DOT-ETH', 'ETC-ETH', 'FIL-ETH', 'LTC-ETH', 'SOL-ETH',
                          'TRX-ETH', 'UNI-ETH', 'XRP-ETH']
         }
@@ -508,7 +541,7 @@ class LulaCryptoScanner:
         
         for sector, symbols in self.sectors.items():
             print(f"Scanning {sector} sector...")
-            sector_results = {'A+': 0, 'A': 0, 'total': 0, 'upgrades': 0}
+            sector_results = {'A+': 0, 'A': 0, 'total': 0, 'upgrades': 0, 'skipped': 0}
             
             for symbol in symbols:
                 try:
@@ -529,9 +562,13 @@ class LulaCryptoScanner:
                             results['A'].append(analysis)
                             sector_results['A'] += 1
                             results['total_base_positions'] += 1
+                    else:
+                        # Count skipped symbols (no data available)
+                        sector_results['skipped'] += 1
                 
                 except Exception as e:
                     print(f"Error analyzing {symbol}: {e}")
+                    sector_results['skipped'] += 1
                     continue
                 
                 # Rate limiting for APIs
@@ -539,7 +576,8 @@ class LulaCryptoScanner:
                     time.sleep(0.1)
             
             results['sector_breakdown'][sector] = sector_results
-            print(f"{sector}: {sector_results['A+']} A+ setups ({sector_results['upgrades']} upgrades), {sector_results['A']} A setups")
+            skipped_note = f" ({sector_results['skipped']} skipped)" if sector_results['skipped'] > 0 else ""
+            print(f"{sector}: {sector_results['A+']} A+ setups ({sector_results['upgrades']} upgrades), {sector_results['A']} A setups{skipped_note}")
         
         return results
     
@@ -768,10 +806,21 @@ if __name__ == "__main__":
     print("   3. MACD Confirmation: Bullish crossover (MANDATORY)")
     print("   4. Risk/Reward: ≥1.5:1 (MANDATORY)")
     print("   5. Weekly Stoch RSI: Advisory context only")
+    print("   6. Bull Flag Pattern: Bonus confirmation (OPTIONAL)")
     print("")
     print("💰 POSITION SIZING:")
     print(f"   • Base size ({scanner.position_config['base_size']}%): MACD bullish crossover")
     print(f"   • Upgrade size ({scanner.position_config['upgrade_size']}%): Base + Steve's DC-MACD green")
+    print("")
+    print("🏴 BULL FLAG DETECTION:")
+    print(f"   • Flagpole: ≥{scanner.bull_flag_config['flagpole_min_gain']}% gain in ≤{scanner.bull_flag_config['flagpole_lookback']} days")
+    print(f"   • Flag: ≤{scanner.bull_flag_config['flag_max_retrace']}% retrace over {scanner.bull_flag_config['flag_min_days']}-{scanner.bull_flag_config['flag_max_days']} days")
+    print(f"   • Volume: Declining during flag, increasing on breakout")
+    print(f"   • Adds confirmation bonus to qualifying setups")
+    print("")
+    print("📊 SCANNING UNIVERSE: All assets treated equally")
+    print(f"   • Total assets: {sum(len(symbols) for symbols in scanner.sectors.values())}")
+    print(f"   • No rankings, levels, or priorities - equal importance for all")
     print("")
     
     # Example 1: Run full scan
