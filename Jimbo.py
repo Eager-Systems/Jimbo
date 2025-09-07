@@ -419,14 +419,28 @@ class JimboStrategyScanner:
                 message += f"🟢 A+ SETUPS ({len(a_plus_setups)}) - Full MACD Confirmation:\n"
                 for setup in a_plus_setups:
                     timing_icon = "🟢" if "optimal" in setup.get('timing_note', '') else "🟡" if "early" in setup.get('timing_note', '') else "🟠"
-                    message += f"• {setup['symbol']} ${setup['price']:.2f} {timing_icon}\n"
+                    
+                    # Add bull flag info
+                    flag_info = ""
+                    if setup.get('bull_flag', {}).get('detected', False):
+                        quality = setup['bull_flag'].get('quality_score', 0)
+                        flag_info = f" 🚩Q{quality}" if quality >= 3 else f" 📏Q{quality}"
+                    
+                    message += f"• {setup['symbol']} ${setup['price']:.2f} {timing_icon}{flag_info}\n"
                 message += "\n"
             
             if a_setups:
                 message += f"🟡 A SETUPS ({len(a_setups)}) - Strong MACD:\n"
                 for setup in a_setups:
                     timing_icon = "🟢" if "optimal" in setup.get('timing_note', '') else "🟡" if "early" in setup.get('timing_note', '') else "🟠"
-                    message += f"• {setup['symbol']} ${setup['price']:.2f} {timing_icon}\n"
+                    
+                    # Add bull flag info
+                    flag_info = ""
+                    if setup.get('bull_flag', {}).get('detected', False):
+                        quality = setup['bull_flag'].get('quality_score', 0)
+                        flag_info = f" 🚩Q{quality}" if quality >= 3 else f" 📏Q{quality}"
+                    
+                    message += f"• {setup['symbol']} ${setup['price']:.2f} {timing_icon}{flag_info}\n"
                 message += "\n"
             
             message += f"⏰ {datetime.now().strftime('%I:%M %p')}"
